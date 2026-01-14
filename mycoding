@@ -1,0 +1,568 @@
+import React, { useState, useEffect } from 'react';
+import { Wallet, TrendingUp, TrendingDown, PieChart, Plus, Calendar, DollarSign, CreditCard, ShoppingBag, Coffee, Home, Car, BarChart3, Sparkles, Menu, Bell, Search } from 'lucide-react';
+
+export default function SmartFinanceTracker() {
+  const [transactions, setTransactions] = useState([]);
+  const [balance, setBalance] = useState(5000000);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
+  const [newTransaction, setNewTransaction] = useState({
+    type: 'expense',
+    amount: '',
+    category: 'food',
+    description: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  const categories = {
+    food: { icon: Coffee, color: 'bg-orange-500', label: 'Makanan' },
+    transport: { icon: Car, color: 'bg-blue-500', label: 'Transport' },
+    shopping: { icon: ShoppingBag, color: 'bg-purple-500', label: 'Belanja' },
+    bills: { icon: Home, color: 'bg-red-500', label: 'Tagihan' },
+    income: { icon: DollarSign, color: 'bg-green-500', label: 'Pendapatan' }
+  };
+
+  useEffect(() => {
+    const sampleTransactions = [
+      { id: 1, type: 'expense', amount: 50000, category: 'food', description: 'Makan siang', date: '2026-01-13' },
+      { id: 2, type: 'expense', amount: 25000, category: 'transport', description: 'Bensin', date: '2026-01-12' },
+      { id: 3, type: 'income', amount: 1000000, category: 'income', description: 'Gaji freelance', date: '2026-01-10' },
+      { id: 4, type: 'expense', amount: 150000, category: 'shopping', description: 'Beli baju', date: '2026-01-11' },
+      { id: 5, type: 'expense', amount: 35000, category: 'food', description: 'Kopi & snack', date: '2026-01-13' },
+      { id: 6, type: 'expense', amount: 200000, category: 'bills', description: 'Listrik', date: '2026-01-09' }
+    ];
+    setTransactions(sampleTransactions);
+  }, []);
+
+  const addTransaction = () => {
+    if (!newTransaction.amount || !newTransaction.description) return;
+
+    const transaction = {
+      id: Date.now(),
+      ...newTransaction,
+      amount: parseFloat(newTransaction.amount)
+    };
+
+    setTransactions([transaction, ...transactions]);
+    
+    if (transaction.type === 'income') {
+      setBalance(balance + transaction.amount);
+    } else {
+      setBalance(balance - transaction.amount);
+    }
+
+    setNewTransaction({
+      type: 'expense',
+      amount: '',
+      category: 'food',
+      description: '',
+      date: new Date().toISOString().split('T')[0]
+    });
+    setShowAddTransaction(false);
+  };
+
+  const totalIncome = transactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const getAIInsight = () => {
+    const avgExpense = totalExpense / transactions.filter(t => t.type === 'expense').length || 0;
+    if (avgExpense > 100000) {
+      return "Pengeluaran rata-rata Anda cukup tinggi. Pertimbangkan untuk mengurangi pengeluaran non-esensial.";
+    }
+    return "Pola pengeluaran Anda terlihat sehat. Pertahankan kebiasaan baik ini!";
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 p-4">
+      {/* Android Phone Frame */}
+      <div className="relative w-full max-w-sm bg-black rounded-[3rem] shadow-2xl p-3 border-8 border-gray-800">
+        {/* Phone Notch */}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-40 h-7 bg-black rounded-b-3xl z-50">
+          <div className="flex items-center justify-center gap-2 h-full">
+            <div className="w-16 h-1.5 bg-gray-800 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
+          </div>
+        </div>
+
+        {/* Phone Screen */}
+        <div className="relative bg-white rounded-[2.5rem] overflow-hidden h-[700px] flex flex-col">
+          {/* Status Bar */}
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 pt-8 pb-2 flex items-center justify-between text-white text-xs">
+            <span className="font-semibold">9:41</span>
+            <div className="flex items-center gap-1">
+              <div className="w-4 h-3 border border-white rounded-sm relative">
+                <div className="absolute inset-0.5 bg-white rounded-sm"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* App Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 pt-4 pb-6 rounded-b-[2rem] shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                    <Wallet className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-bold">Smart Finance</h1>
+                    <p className="text-xs text-purple-100">Kelola keuangan cerdas</p>
+                  </div>
+                </div>
+                <button className="bg-white/20 hover:bg-white/30 p-2 rounded-xl backdrop-blur-sm">
+                  <Bell className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                <p className="text-purple-100 text-xs mb-1">Saldo Total</p>
+                <h2 className="text-2xl font-bold mb-3">{formatCurrency(balance)}</h2>
+                <div className="flex gap-2">
+                  <div className="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TrendingUp className="w-3 h-3 text-green-300" />
+                      <span className="text-xs text-purple-100">Masuk</span>
+                    </div>
+                    <p className="font-semibold text-sm">{formatCurrency(totalIncome)}</p>
+                  </div>
+                  <div className="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TrendingDown className="w-3 h-3 text-red-300" />
+                      <span className="text-xs text-purple-100">Keluar</span>
+                    </div>
+                    <p className="font-semibold text-sm">{formatCurrency(totalExpense)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="p-4 pb-20">
+              {activeTab === 'home' && (
+                <>
+                  {/* AI Insight */}
+                  <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-2xl p-4 mb-4 shadow-md">
+                    <div className="flex items-start gap-2">
+                      <div className="bg-white/30 p-1.5 rounded-lg backdrop-blur-sm">
+                        <Sparkles className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white text-sm mb-1">AI Insight</h3>
+                        <p className="text-white/90 text-xs leading-relaxed">{getAIInsight()}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="grid grid-cols-4 gap-3 mb-4">
+                    {Object.entries(categories).slice(0, 4).map(([key, cat]) => {
+                      const Icon = cat.icon;
+                      return (
+                        <button key={key} className="flex flex-col items-center gap-2 bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition-all">
+                          <div className={`${cat.color} p-2.5 rounded-xl`}>
+                            <Icon className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-xs font-medium text-gray-700">{cat.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Recent Transactions */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-bold text-gray-800 text-sm flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        Transaksi Terbaru
+                      </h3>
+                      <button className="text-xs text-purple-600 font-semibold">Lihat Semua</button>
+                    </div>
+                    <div className="space-y-2">
+                      {transactions.slice(0, 6).map(transaction => {
+                        const CategoryIcon = categories[transaction.category].icon;
+                        return (
+                          <div key={transaction.id} className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className={`${categories[transaction.category].color} p-2 rounded-lg`}>
+                                  <CategoryIcon className="w-4 h-4 text-white" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-gray-800 text-sm">{transaction.description}</p>
+                                  <p className="text-xs text-gray-500">{categories[transaction.category].label}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-bold text-sm ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                  {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                                </p>
+                                <p className="text-xs text-gray-400">{transaction.date}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'stats' && (
+                <div>
+                  {/* Statistics Overview */}
+                  <div className="bg-gradient-to-r from-indigo-400 to-purple-400 rounded-2xl p-4 mb-4 shadow-md">
+                    <div className="flex items-start gap-2">
+                      <div className="bg-white/30 p-1.5 rounded-lg backdrop-blur-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white text-sm mb-1">Analisis Pengeluaran</h3>
+                        <p className="text-white/90 text-xs leading-relaxed">Total pengeluaran bulan ini {formatCurrency(totalExpense)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Category Statistics */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-bold text-gray-800 text-sm flex items-center gap-1">
+                        <PieChart className="w-4 h-4" />
+                        Per Kategori
+                      </h3>
+                      <button className="text-xs text-purple-600 font-semibold">Detail</button>
+                    </div>
+                    <div className="space-y-2">
+                      {Object.entries(categories).filter(([key]) => key !== 'income').map(([key, cat]) => {
+                        const Icon = cat.icon;
+                        const amount = transactions
+                          .filter(t => t.category === key)
+                          .reduce((sum, t) => sum + t.amount, 0);
+                        const percentage = totalExpense > 0 ? (amount / totalExpense) * 100 : 0;
+                        
+                        return (
+                          <div key={key} className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className={`${cat.color} p-2 rounded-lg`}>
+                                  <Icon className="w-4 h-4 text-white" />
+                                </div>
+                                <span className="text-sm font-semibold text-gray-800">{cat.label}</span>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-sm text-gray-800">{formatCurrency(amount)}</p>
+                                <p className="text-xs text-gray-500">{percentage.toFixed(0)}%</p>
+                              </div>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`${cat.color} h-2 rounded-full transition-all duration-500`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'cards' && (
+                <div>
+                  <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
+                    <CreditCard className="w-4 h-4" />
+                    Kartu & Rekening
+                  </h3>
+                  
+                  {/* Credit Cards */}
+                  <div className="space-y-3 mb-4">
+                    <div className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl p-4 text-white shadow-lg">
+                      <div className="flex justify-between items-start mb-8">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
+                          <span className="text-xs font-semibold">Premium</span>
+                        </div>
+                        <CreditCard className="w-8 h-8 opacity-50" />
+                      </div>
+                      <div className="mb-6">
+                        <p className="text-xs opacity-70 mb-1">Nomor Kartu</p>
+                        <p className="text-lg font-mono tracking-wider">•••• •••• •••• 4826</p>
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-xs opacity-70 mb-1">Pemegang Kartu</p>
+                          <p className="text-sm font-semibold">JOHN DOE</p>
+                        </div>
+                        <div>
+                          <p className="text-xs opacity-70 mb-1">Berlaku</p>
+                          <p className="text-sm font-semibold">12/28</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-4 text-white shadow-lg">
+                      <div className="flex justify-between items-start mb-8">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
+                          <span className="text-xs font-semibold">Debit</span>
+                        </div>
+                        <CreditCard className="w-8 h-8 opacity-50" />
+                      </div>
+                      <div className="mb-6">
+                        <p className="text-xs opacity-70 mb-1">Nomor Kartu</p>
+                        <p className="text-lg font-mono tracking-wider">•••• •••• •••• 8293</p>
+                      </div>
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-xs opacity-70 mb-1">Pemegang Kartu</p>
+                          <p className="text-sm font-semibold">JOHN DOE</p>
+                        </div>
+                        <div>
+                          <p className="text-xs opacity-70 mb-1">Berlaku</p>
+                          <p className="text-sm font-semibold">09/27</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bank Accounts */}
+                  <h3 className="font-bold text-gray-800 mb-3 text-sm">Rekening Bank</h3>
+                  <div className="space-y-2">
+                    <div className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-red-100 p-2 rounded-lg">
+                          <Wallet className="w-5 h-5 text-red-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm text-gray-800">Bank Mandiri</p>
+                          <p className="text-xs text-gray-500">•••• •••• 7234</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm text-gray-800">{formatCurrency(3200000)}</p>
+                        <p className="text-xs text-green-600">Aktif</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-100 p-2 rounded-lg">
+                          <Wallet className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm text-gray-800">Bank BCA</p>
+                          <p className="text-xs text-gray-500">•••• •••• 5621</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm text-gray-800">{formatCurrency(1800000)}</p>
+                        <p className="text-xs text-green-600">Aktif</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-green-100 p-2 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm text-gray-800">E-Wallet GoPay</p>
+                          <p className="text-xs text-gray-500">0812 •••• 4567</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm text-gray-800">{formatCurrency(250000)}</p>
+                        <p className="text-xs text-green-600">Aktif</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-purple-100 p-2 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-sm text-gray-800">E-Wallet OVO</p>
+                          <p className="text-xs text-gray-500">0857 •••• 8901</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-sm text-gray-800">{formatCurrency(180000)}</p>
+                        <p className="text-xs text-green-600">Aktif</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    <button className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                      <div className="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <Plus className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <p className="text-xs font-semibold text-gray-700">Tambah Kartu</p>
+                    </button>
+                    <button className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                      <div className="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <CreditCard className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <p className="text-xs font-semibold text-gray-700">Transfer</p>
+                    </button>
+                    <button className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                      <div className="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <Wallet className="w-5 h-5 text-green-600" />
+                      </div>
+                      <p className="text-xs font-semibold text-gray-700">Top Up</p>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Floating Action Button */}
+          <button
+            onClick={() => setShowAddTransaction(true)}
+            className="absolute bottom-20 right-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-40"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+
+          {/* Add Transaction Modal */}
+          {showAddTransaction && (
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-end z-50">
+              <div className="bg-white rounded-t-3xl w-full p-4 animate-slide-up">
+                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+                <h3 className="text-lg font-bold mb-4 text-gray-800">Tambah Transaksi</h3>
+                
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setNewTransaction({...newTransaction, type: 'expense'})}
+                    className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                      newTransaction.type === 'expense' 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    Pengeluaran
+                  </button>
+                  <button
+                    onClick={() => setNewTransaction({...newTransaction, type: 'income'})}
+                    className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                      newTransaction.type === 'income' 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    Pemasukan
+                  </button>
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  <input
+                    type="number"
+                    placeholder="Jumlah"
+                    value={newTransaction.amount}
+                    onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value})}
+                    className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none text-sm"
+                  />
+                  
+                  <select
+                    value={newTransaction.category}
+                    onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
+                    className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none text-sm"
+                  >
+                    {Object.entries(categories).map(([key, cat]) => (
+                      <option key={key} value={key}>{cat.label}</option>
+                    ))}
+                  </select>
+
+                  <input
+                    type="text"
+                    placeholder="Deskripsi"
+                    value={newTransaction.description}
+                    onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
+                    className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none text-sm"
+                  />
+
+                  <input
+                    type="date"
+                    value={newTransaction.date}
+                    onChange={(e) => setNewTransaction({...newTransaction, date: e.target.value})}
+                    className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none text-sm"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowAddTransaction(false)}
+                    className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-all"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={addTransaction}
+                    className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Navigation */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-30">
+            <div className="flex justify-around">
+              <button
+                onClick={() => setActiveTab('home')}
+                className={`flex flex-col items-center gap-0.5 transition-all ${
+                  activeTab === 'home' ? 'text-purple-600' : 'text-gray-400'
+                }`}
+              >
+                <Wallet className="w-5 h-5" />
+                <span className="text-xs font-medium">Beranda</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('stats')}
+                className={`flex flex-col items-center gap-0.5 transition-all ${
+                  activeTab === 'stats' ? 'text-purple-600' : 'text-gray-400'
+                }`}
+              >
+                <PieChart className="w-5 h-5" />
+                <span className="text-xs font-medium">Statistik</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('cards')}
+                className={`flex flex-col items-center gap-0.5 transition-all ${
+                  activeTab === 'cards' ? 'text-purple-600' : 'text-gray-400'
+                }`}
+              >
+                <CreditCard className="w-5 h-5" />
+                <span className="text-xs font-medium">Kartu</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Android Navigation Bar */}
+          <div className="absolute bottom-0 left-0 right-0 h-8 bg-black flex items-center justify-center gap-16 z-40">
+            <div className="w-3 h-3 border-2 border-gray-600 rounded-sm"></div>
+            <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+            <div className="w-8 h-0.5 bg-gray-600 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
