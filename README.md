@@ -1,4 +1,4 @@
-# UTS-PEMROGRAMAN-BERGERAK
+# UTS-Pemrograman-Bergerak1
 Proyek Mobile Programming - Aplikasi Smart Finance Tracker
 
 # ![Contoh Gambar](https://github.com/isnanPppp/UTS-PEMROGRAMAN-BERGERAK/blob/main/pic3.png)
@@ -6,7 +6,6 @@ Proyek Mobile Programming - Aplikasi Smart Finance Tracker
 # ![Contoh Gambar](https://github.com/isnanPppp/UTS-PEMROGRAMAN-BERGERAK/blob/main/pic1.png)
 
 # codingan project
-
 import React, { useState, useEffect } from 'react';
 import { Wallet, TrendingUp, TrendingDown, PieChart, Plus, Calendar, DollarSign, CreditCard, ShoppingBag, Coffee, Home, Car, BarChart3, Sparkles, Menu, Bell, Search } from 'lucide-react';
 
